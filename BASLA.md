@@ -1,12 +1,19 @@
 # BAŞLA — FoodLens-i necə açıb test edim?
 
-## Ən asan yol (training bitəndən sonra)
+## Ən asan yol: Desktop-dakı **FoodLens** shortcut-u
+
+Masaüstündə **FoodLens** ikonuna iki dəfə klik → hər şey özü işə düşür:
+venv yoxlanılır (yoxdursa qurulur), nutrition DB yoxlanılır, **API açılır**
+(http://127.0.0.1:8000/docs), **demo açılır** (http://localhost:8501).
+Heç bir manual addım yoxdur. Demo pəncərəsini bağlayanda API də bağlanır.
+
+Alternativlər:
 
 | Nə istəyirsən | Nə et |
 |---|---|
-| **Demonu aç** | `DEMO.bat` faylına iki dəfə klik. Brauzerdə http://localhost:8501 açılacaq. |
-| **Testləri işlət** | `TESTLER.bat` faylına iki dəfə klik. |
-| **API-ni aç** | PowerShell-də: `.\run.ps1 api` → http://127.0.0.1:8000/docs |
+| **Hamısı birdən** | Desktop → `FoodLens` (və ya qovluqda `START.bat`) |
+| **Yalnız demo** | `DEMO.bat` faylına iki dəfə klik |
+| **Testləri işlət** | `TESTLER.bat` faylına iki dəfə klik |
 
 ## Demoda nəyi yoxla
 
