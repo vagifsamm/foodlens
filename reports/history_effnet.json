@@ -2,12 +2,12 @@
   {
     "epoch": 1,
     "phase": "full",
-    "train_loss": NaN,
-    "train_acc": 0.03,
-    "val_loss": NaN,
-    "val_acc": 0.05,
-    "val_macro_f1": 0.0038095238095238095,
+    "train_loss": 3.1825362614222934,
+    "train_acc": 0.075,
+    "val_loss": 2.871690000806536,
+    "val_acc": 0.23,
+    "val_macro_f1": 0.20402505334811163,
     "lr": 0.001,
-    "elapsed_s": 4.4
+    "elapsed_s": 4.8
   }
 ]

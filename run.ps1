@@ -17,7 +17,7 @@ switch ($Target) {
         & $Py scripts/build_nutrition_db.py
     }
     "train-simple" { & $Py -m src.cnn.train --model simple --epochs 15 --bs 64 @Rest }
-    "train-effnet" { & $Py -m src.cnn.train --model effnet --epochs 10 --bs 32 --mixed-precision @Rest }
+    "train-effnet" { & $Py -m src.cnn.train --model effnet --epochs 10 --bs 32 @Rest }
     "evaluate"     { & $Py -m src.cnn.evaluate @Rest }
     "api"          { & $Py -m uvicorn src.api:app --host 127.0.0.1 --port 8000 }
     "demo"         { & $Py -m streamlit run app/streamlit_app.py }

@@ -27,32 +27,49 @@ st.markdown("""
     #MainMenu, footer, header[data-testid="stHeader"] { visibility: hidden; }
     .stApp { background: #FDF8F3; }
     h1, h2, h3 { color: #4A2C1A !important; font-family: Georgia, serif; }
-    section[data-testid="stSidebar"] {
-        background: #2E1F16;
-    }
-    section[data-testid="stSidebar"] * { color: #F3E6D8; }
-    section[data-testid="stSidebar"] .fl-card { background: #3D2B1F; border-color: #5A4232; }
-    section[data-testid="stSidebar"] .fl-kpi { color: #F2A65A; }
-    section[data-testid="stSidebar"] .fl-label { color: #C9AE94; }
+    section[data-testid="stSidebar"] { border-right: 1px solid #EAD9C9; }
     .fl-card {
-        background: #FFFFFF; border-radius: 16px; padding: 1.2rem 1.5rem;
+        background: #FFFFFF; border-radius: 16px; padding: 1.1rem 1.3rem;
         border: 1px solid #EAD9C9; box-shadow: 0 2px 10px rgba(74,44,26,.06);
         margin-bottom: 1rem;
     }
-    .fl-kpi { font-size: 2rem; font-weight: 700; color: #C2571B; }
-    .fl-label { color: #8A6D57; font-size: .85rem; text-transform: uppercase;
+    .fl-hero {
+        background: linear-gradient(120deg, #C2571B 0%, #E08A3C 100%);
+        color: #FFF8F0; border-radius: 18px; padding: 1.4rem 1.6rem;
+        margin-bottom: 1rem;
+    }
+    .fl-hero .big { font-size: 2.1rem; font-weight: 800; line-height: 1.1; }
+    .fl-hero .sub { opacity: .92; font-size: 1.02rem; margin-top: .3rem; }
+    .fl-kpi { font-size: 1.7rem; font-weight: 700; color: #C2571B; }
+    .fl-label { color: #8A6D57; font-size: .78rem; text-transform: uppercase;
                 letter-spacing: .06em; }
-    .fl-chip { display: inline-block; background: #F6E7D8; color: #7A4A21;
+    .fl-chip { display: inline-block; background: rgba(255,255,255,.25);
+               border: 1px solid rgba(255,255,255,.5); color: inherit;
+               border-radius: 999px; padding: .12rem .7rem; margin: .12rem;
+               font-size: .8rem; }
+    .fl-chip-dark { display: inline-block; background: #F6E7D8; color: #7A4A21;
                border-radius: 999px; padding: .15rem .7rem; margin: .1rem;
                font-size: .8rem; }
-    .stTabs [data-baseweb="tab"] { font-size: 1.02rem; }
+    .stTabs [data-baseweb="tab"] { font-size: 1.05rem; padding: .6rem 1rem; }
     div.stButton > button {
         background: #C2571B; color: white; border: none; border-radius: 10px;
-        padding: .5rem 1.4rem;
+        padding: .55rem 1.4rem; font-weight: 600;
     }
     div.stButton > button:hover { background: #A34614; color: white; }
+    div[data-testid="stFileUploader"] section {
+        border: 2px dashed #D9B896; border-radius: 14px; background: #FFF9F2;
+    }
 </style>
 """, unsafe_allow_html=True)
+
+
+def fit_panel(img: np.ndarray, height: int = 300) -> np.ndarray:
+    """Resize (and letterbox) any image to a fixed display height."""
+    if img.ndim == 2:
+        img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+    h, w = img.shape[:2]
+    new_w = max(int(w * height / h), 1)
+    return cv2.resize(img, (new_w, height))
 
 
 def effnet_available() -> bool:
@@ -139,22 +156,27 @@ with tab1:
         else:
             with st.spinner("Vizual nəticələr hazırlanır..."):
                 extras = analysis_extras(img)
-            c1, c2, c3, c4 = st.columns(4)
-            c1.image(cv2.cvtColor(img, cv2.COLOR_BGR2RGB), caption="Orijinal",
-                     use_container_width=True)
-            c2.image(extras["mask"], caption="Seqmentasiya maskası", clamp=True,
-                     use_container_width=True)
-            c3.image(cv2.cvtColor(extras["gradcam"], cv2.COLOR_BGR2RGB),
-                     caption="Grad-CAM", use_container_width=True)
-            with c4:
-                st.markdown(f"""<div class="fl-card">
-                    <div class="fl-label">Nəticə</div>
-                    <div class="fl-kpi">{meal.az_name}</div>
-                    <p>Əminlik: <b>{meal.confidence:.0%}</b><br>
-                    Porsiya: <b>{meal.portion_bucket}</b>
-                    ({'plitə tapıldı' if meal.portion_confidence == 'high' else 'boşqab tapılmadı, təxmini'})</p>
-                    {''.join(f'<span class="fl-chip">{t}</span>' for t in meal.tags)}
-                    </div>""", unsafe_allow_html=True)
+
+            top2 = (f" · 2-ci ehtimal: {meal.top5[1][0]} {meal.top5[1][1]:.0%}"
+                    if len(meal.top5) > 1 else "")
+            st.markdown(f"""<div class="fl-hero">
+                <div class="fl-label" style="color:#FFE8D2">Nəticə</div>
+                <div class="big">{meal.az_name}</div>
+                <div class="sub">Əminlik: <b>{meal.confidence:.0%}</b>{top2}<br>
+                Porsiya: <b>{meal.portion_bucket}</b> ·
+                {'boşqab tapıldı, miqyas dəqiqdir' if meal.portion_confidence == 'high'
+                 else 'boşqab tapılmadı, təxmini qiymət'}</div>
+                <div style="margin-top:.5rem">{''.join(
+                    f'<span class="fl-chip">{t}</span>' for t in meal.tags)}</div>
+                </div>""", unsafe_allow_html=True)
+
+            c1, c2, c3 = st.columns(3)
+            c1.image(cv2.cvtColor(fit_panel(img), cv2.COLOR_BGR2RGB),
+                     caption="Orijinal", use_container_width=True)
+            c2.image(fit_panel(extras["mask"]), caption="Seqmentasiya maskası",
+                     clamp=True, use_container_width=True)
+            c3.image(cv2.cvtColor(fit_panel(extras["gradcam"]), cv2.COLOR_BGR2RGB),
+                     caption="Grad-CAM (model hara baxır)", use_container_width=True)
 
             grams = st.slider("Porsiya (qram), lazımsa düzəldin", 20, 1500,
                               int(meal.grams), 10)
@@ -195,7 +217,7 @@ with tab2:
                 cols = st.columns([2, 1, 1, 1, 1])
                 if e.in_db:
                     az = db_json[e.food]["az_name"]
-                    cols[0].markdown(f'<span class="fl-chip">✅ {az}</span>',
+                    cols[0].markdown(f'<span class="fl-chip-dark">✅ {az}</span>',
                                      unsafe_allow_html=True)
                     default_g = float(db_json[e.food]["typical_serving_g"]) * e.qty
                     grams = cols[1].number_input("qram", 10.0, 3000.0, default_g,
@@ -207,7 +229,7 @@ with tab2:
                         log_meal(e.food, grams, 1.0, "text")
                         st.success(f"{az} gündəliyə yazıldı.")
                 else:
-                    cols[0].markdown(f'<span class="fl-chip">❓ {e.raw}</span>',
+                    cols[0].markdown(f'<span class="fl-chip-dark">❓ {e.raw}</span>',
                                      unsafe_allow_html=True)
                     cols[1].caption("Bazada yoxdur, kalori hesablanmadı")
 
