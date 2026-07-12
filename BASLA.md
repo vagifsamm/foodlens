@@ -4,7 +4,7 @@
 
 Masaüstündə **FoodLens** ikonuna iki dəfə klik → hər şey özü işə düşür:
 venv yoxlanılır (yoxdursa qurulur), nutrition DB yoxlanılır, **API açılır**
-(http://127.0.0.1:8000/docs), **demo açılır** (http://localhost:8501).
+(<http://127.0.0.1:8000/docs>), **demo açılır** (<http://localhost:8501>).
 Heç bir manual addım yoxdur. Demo pəncərəsini bağlayanda API də bağlanır.
 
 Alternativlər:
