@@ -1,0 +1,32 @@
+# FoodLens dependencies — Python 3.13, Windows, CUDA 12.6 wheels for GTX 1660 Ti.
+# Exact resolved versions are captured in requirements.lock.txt (pip freeze).
+--extra-index-url https://download.pytorch.org/whl/cu126
+
+torch==2.7.1+cu126
+torchvision==0.22.1+cu126
+
+opencv-python>=4.10,<5
+numpy>=2.0,<3
+pillow>=10.4
+
+sentence-transformers>=3.3,<6
+transformers>=4.48,<5
+anthropic>=0.40
+
+fastapi>=0.115,<1
+uvicorn[standard]>=0.32,<1
+python-multipart>=0.0.12
+streamlit>=1.40,<2
+
+sqlalchemy>=2.0,<3
+pydantic>=2.9,<3
+pydantic-settings>=2.6,<3
+jinja2>=3.1,<4
+
+matplotlib>=3.9,<4
+scikit-learn>=1.5,<2
+tqdm>=4.66
+
+pytest>=8.3
+ruff>=0.8
+mypy>=1.13
