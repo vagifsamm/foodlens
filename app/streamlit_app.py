@@ -24,8 +24,16 @@ st.set_page_config(page_title="FoodLens", page_icon="🍽️", layout="wide")
 # ---------- styling ----------
 st.markdown("""
 <style>
+    #MainMenu, footer, header[data-testid="stHeader"] { visibility: hidden; }
     .stApp { background: #FDF8F3; }
     h1, h2, h3 { color: #4A2C1A !important; font-family: Georgia, serif; }
+    section[data-testid="stSidebar"] {
+        background: #2E1F16;
+    }
+    section[data-testid="stSidebar"] * { color: #F3E6D8; }
+    section[data-testid="stSidebar"] .fl-card { background: #3D2B1F; border-color: #5A4232; }
+    section[data-testid="stSidebar"] .fl-kpi { color: #F2A65A; }
+    section[data-testid="stSidebar"] .fl-label { color: #C9AE94; }
     .fl-card {
         background: #FFFFFF; border-radius: 16px; padding: 1.2rem 1.5rem;
         border: 1px solid #EAD9C9; box-shadow: 0 2px 10px rgba(74,44,26,.06);
@@ -114,11 +122,15 @@ with tab1:
         st.warning("Model hələ öyrədilməyib. Əvvəlcə `.\\run.ps1 train-effnet` işlədin.")
     src_choice = st.radio("Mənbə", ["Fayl yüklə", "Kamera"], horizontal=True,
                           label_visibility="collapsed")
-    file = (st.file_uploader("Yemək şəkli seçin", type=["jpg", "jpeg", "png"])
+    file = (st.file_uploader("Yemək şəkli seçin",
+                             type=["jpg", "jpeg", "png", "webp", "bmp"])
             if src_choice == "Fayl yüklə" else st.camera_input("Şəkil çəkin"))
 
     if file is not None and effnet_available():
         img = cv2.imdecode(np.frombuffer(file.getvalue(), np.uint8), cv2.IMREAD_COLOR)
+        if img is None:
+            st.error("Bu şəkil formatı oxuna bilmədi. JPG və ya PNG yükləyin.")
+            st.stop()
         with st.spinner("Analiz gedir..."):
             meal = analyze(img, profile, with_advice=False)
         if not meal.ok:
