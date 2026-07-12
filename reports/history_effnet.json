@@ -1,0 +1,13 @@
+[
+  {
+    "epoch": 1,
+    "phase": "full",
+    "train_loss": NaN,
+    "train_acc": 0.03,
+    "val_loss": NaN,
+    "val_acc": 0.05,
+    "val_macro_f1": 0.0038095238095238095,
+    "lr": 0.001,
+    "elapsed_s": 4.4
+  }
+]

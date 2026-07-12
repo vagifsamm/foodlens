@@ -96,13 +96,33 @@ def build_index(force: bool = False) -> None:
     log.info("Wrote %s", INDEX_PATH)
 
 
-def retrieve(query: str, k: int = 4) -> list[Chunk]:
-    """Return the top-k most similar chunks for a query."""
+def _lexical_score(query: str, text: str) -> float:
+    """Suffix-tolerant token overlap for Azerbaijani (prefix match, len >= 4).
+
+    MiniLM is English-centric and misses inflected AZ forms ("arıqlamaq" vs
+    "arıqlama", "pitsanın" vs "pitsa"); 5-char prefix matching bridges that.
+    """
+    import re
+
+    q_tokens = [t for t in re.findall(r"\w+", query.lower()) if len(t) >= 4]
+    if not q_tokens:
+        return 0.0
+    t_tokens = {t for t in re.findall(r"\w+", text.lower()) if len(t) >= 4}
+    hits = sum(1 for qt in q_tokens
+               if any(tt.startswith(qt[:5]) or qt.startswith(tt[:5])
+                      for tt in t_tokens))
+    return hits / len(q_tokens)
+
+
+def retrieve(query: str, k: int = 4, alpha: float = 0.5) -> list[Chunk]:
+    """Return top-k chunks by hybrid score: alpha*cosine + (1-alpha)*lexical."""
     build_index()
     data = np.load(INDEX_PATH, allow_pickle=True)
     emb, texts, sources = data["embeddings"], data["texts"], data["sources"]
     q = _get_embedder().encode([query], normalize_embeddings=True)[0]
-    sims = emb @ q
+    cos = emb @ q
+    lex = np.array([_lexical_score(query, str(t)) for t in texts])
+    sims = alpha * cos + (1 - alpha) * lex
     top = np.argsort(-sims)[:k]
     return [Chunk(text=str(texts[i]), source=str(sources[i]), score=float(sims[i]))
             for i in top]
