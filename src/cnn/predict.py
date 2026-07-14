@@ -22,12 +22,14 @@ class Predictor:
 
     Args:
         model_name: "simple" | "effnet".
-        device: Override; defaults to settings.resolve_device().
+        device: Override; defaults to CPU. Inference is CPU-first by design
+            (CLAUDE.md requirement) so the demo/API never compete with
+            training for the 6 GB GPU.
     """
 
     def __init__(self, model_name: str = "effnet", device: str | None = None) -> None:
         self.model_name = model_name
-        self.device = device or settings.resolve_device()
+        self.device = device or "cpu"
         ckpt_path = settings.models_dir / f"{model_name}_best.pt"
         if not ckpt_path.exists():
             raise FileNotFoundError(f"Checkpoint missing: {ckpt_path} - train first")

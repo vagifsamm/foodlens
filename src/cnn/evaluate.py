@@ -61,7 +61,7 @@ def measure_cpu_latency(model_name: str, n: int = 20) -> float:
 
 def evaluate_model(model_name: str) -> dict:
     """Full metric computation + plots for one checkpoint."""
-    pred = Predictor(model_name)
+    pred = Predictor(model_name, device=settings.resolve_device())
     targets, top1, top5_hits = collect_predictions(pred)
 
     report = classification_report(targets, top1, target_names=CLASSES,
