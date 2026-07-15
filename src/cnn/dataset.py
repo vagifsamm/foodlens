@@ -106,5 +106,6 @@ def get_dataloaders(batch_size: int = 32, num_workers: Optional[int] = None,
 if __name__ == "__main__":
     tr, va, te = get_dataloaders(batch_size=8, limit=16)
     x, y = next(iter(tr))
-    print(f"train={len(tr.dataset)} val={len(va.dataset)} test={len(te.dataset)}")
+    print(f"train={len(tr.dataset)} val={len(va.dataset)} "  # type: ignore[arg-type]
+          f"test={len(te.dataset)}")  # type: ignore[arg-type]
     print(f"batch: x={tuple(x.shape)} y={tuple(y.shape)} labels={y.tolist()}")

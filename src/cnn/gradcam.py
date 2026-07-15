@@ -16,10 +16,12 @@ def target_layer(model: nn.Module, model_name: str) -> nn.Module:
     """Return the last conv block for a supported model."""
     if model_name == "simple":
         # Last conv layer of SimpleCNN.features (Conv,BN,ReLU,Pool x4).
-        convs = [m for m in model.features if isinstance(m, nn.Conv2d)]
+        # nn.Module.__getattr__ is typed as Tensor|Module, so the stubs don't
+        # know .features is iterable/indexable here; it is at runtime.
+        convs = [m for m in model.features if isinstance(m, nn.Conv2d)]  # type: ignore[union-attr]
         return convs[-1]
     if model_name == "effnet":
-        return model.features[-1]
+        return model.features[-1]  # type: ignore[index,return-value]
     raise ValueError(f"Unknown model: {model_name}")
 
 
@@ -71,7 +73,7 @@ def overlay_heatmap(img_bgr: np.ndarray, cam: np.ndarray,
                     alpha: float = 0.4) -> np.ndarray:
     """Overlay a jet-colormapped CAM on a BGR image."""
     heat = cv2.resize(cam, (img_bgr.shape[1], img_bgr.shape[0]))
-    heat_u8 = np.uint8(255 * heat)
+    heat_u8 = (255 * heat).astype(np.uint8)
     heat_jet = cv2.applyColorMap(heat_u8, cv2.COLORMAP_JET)
     return cv2.addWeighted(heat_jet, alpha, img_bgr, 1 - alpha, 0)
 

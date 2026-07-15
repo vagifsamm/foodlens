@@ -1,0 +1,3 @@
+# Notebooks use compact one-line plotting idioms (semicolons) that are not worth
+# flagging; lint the library/app/test code only.
+extend-exclude = ["notebooks", ".venv"]

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import Sequence
+from typing import Any, Sequence
 
 from jinja2 import Template
 
@@ -71,7 +71,7 @@ def _totals(logs: Sequence) -> Macros:
 def _build_plan(profile: UserProfile, target: float) -> str:
     """Pick a 3-meal next-day plan within the kcal budget."""
     db = _load_db()
-    meals = []
+    meals: list[dict[str, Any]] = []
     budget = target
     for slot, cls in PLAN_CANDIDATES.get(profile.goal, PLAN_CANDIDATES["maintain"]):
         entry = db[cls]

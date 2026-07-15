@@ -88,8 +88,13 @@ def estimate_portion(mask: np.ndarray, plate: Optional[Circle],
         area_cm2 = mask_area_px * cm_per_px ** 2
         grams_scaled = area_cm2 * density
 
-    grams = grams_scaled if grams_scaled is not None else grams_bucket
-    confidence = "high" if plate is not None else "low"
+    # A degenerate (empty) mask makes the scaled estimate 0 g, which is
+    # meaningless; fall back to the serving-based bucket estimate in that case.
+    if grams_scaled is not None and grams_scaled > 0:
+        grams = grams_scaled
+    else:
+        grams = grams_bucket
+    confidence = "high" if (plate is not None and grams_scaled and grams_scaled > 0) else "low"
     return PortionEstimate(bucket=bucket, coverage=round(coverage, 3),
                            grams_bucket=round(grams_bucket, 1),
                            grams_scaled=None if grams_scaled is None else round(grams_scaled, 1),

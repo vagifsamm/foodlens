@@ -92,14 +92,21 @@ def segment_food(img: np.ndarray, plate: Optional[Circle]) -> np.ndarray:
     binary = np.where((mask == cv2.GC_FGD) | (mask == cv2.GC_PR_FGD), 255, 0).astype(np.uint8)
 
     kernel = np.ones((5, 5), np.uint8)
-    binary = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel)
-    binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel)
+    binary = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel).astype(np.uint8)
+    binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel).astype(np.uint8)
 
     n, labels, stats, _ = cv2.connectedComponentsWithStats(binary)
-    if n <= 1:
-        return binary
-    largest = 1 + int(np.argmax(stats[1:, cv2.CC_STAT_AREA]))
-    return np.where(labels == largest, 255, 0).astype(np.uint8)
+    if n > 1:
+        largest = 1 + int(np.argmax(stats[1:, cv2.CC_STAT_AREA]))
+        binary = np.where(labels == largest, 255, 0).astype(np.uint8)
+
+    # GrabCut collapses to all-background on tight food crops (Food-101 images are
+    # mostly food with no visible background inside the rect). Fall back to the
+    # rect ROI as the food mask so downstream portioning never gets an empty mask.
+    if int((binary > 0).sum()) < 0.01 * binary.size:
+        binary = np.zeros((h, w), np.uint8)
+        binary[y0:y1, x0:x1] = 255
+    return binary
 
 
 def masked_crop(img: np.ndarray, mask: np.ndarray, pad: int = 10) -> np.ndarray:

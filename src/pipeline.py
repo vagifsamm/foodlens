@@ -114,5 +114,8 @@ if __name__ == "__main__":
         sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
     if len(sys.argv) < 2:
         sys.exit("usage: python -m src.pipeline <image>")
-    result = analyze(cv2.imread(sys.argv[1]))
+    img = cv2.imread(sys.argv[1])
+    if img is None:
+        sys.exit(f"Could not read image: {sys.argv[1]}")
+    result = analyze(img)
     print(result)

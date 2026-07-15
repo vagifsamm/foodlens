@@ -12,7 +12,7 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from config import CLASSES, settings  # noqa: E402
+from config import settings  # noqa: E402
 from src import db  # noqa: E402
 from src.nlp.meal_parser import parse_meal  # noqa: E402
 from src.nlp.summarizer import daily_summary  # noqa: E402
