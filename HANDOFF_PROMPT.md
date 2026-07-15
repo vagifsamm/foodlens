@@ -1,9 +1,12 @@
-# HANDOFF PROMPT — copy everything below this line into Claude Code
+# HANDOFF PROMPT — copy everything below the line into your Claude Code
 
 ---
 
-You are continuing **FoodLens**, an AI Engineering course final project that is
-already ~80% built. Work autonomously; do not ask me to write code.
+You are taking over **FoodLens**, a finished AI-Engineering course project. It is
+**complete and working** — all code, trained models, evaluation, docs and a
+one-click demo are done and pushed. Your job is to get it running, understand it
+well enough to defend or extend it, and (optionally) improve it. Work
+autonomously; do not ask me to write code.
 
 ## Get the code
 
@@ -12,68 +15,70 @@ git clone https://github.com/vagifsamm/foodlens.git
 cd foodlens
 ```
 
+The trained checkpoints are **already in the repo** (`models/effnet_best.pt`,
+`models/simple_best.pt`) — you do NOT need to retrain. All report artefacts
+(`reports/`) and the executed notebook are included too.
+
 ## Read these first, fully, in this order
 
-1. `CLAUDE.md` — binding project rules (tech stack, layout, coding standards)
-2. `PROJECT_SPEC.md` — the complete technical specification
-3. `PROGRESS.md` — live checklist: exactly what is done and what remains
-4. `DECISIONS.md` — 11 logged engineering decisions; do NOT re-litigate them
-5. `PROMPTS.md` — original build order (Prompts 0-12); remaining work maps to Prompts 10-12
-6. `BASLA.md` — how the owner runs the demo (one-click launchers)
+1. `README.md` — what it is, architecture diagram, results, how to run
+2. `FINAL_REVIEW.md` — quality-gate status, DoD checklist, the 3 weakest parts + how to defend them
+3. `CLAUDE.md` — binding project rules (tech stack, layout, coding standards)
+4. `PROJECT_SPEC.md` — the complete technical specification
+5. `DECISIONS.md` — 11 logged engineering decisions; do NOT re-litigate them
+6. `PRESENTATION_OUTLINE.md` — 12 Azerbaijani slides with speaker notes
+7. `BASLA.md` — how the owner runs the demo (one-click launchers, Windows)
 
-## Current state (verified working)
+## Set up and verify (any OS)
 
-- All code layers are implemented and tested: CV (OpenCV quality gate, HoughCircles
-  plate detection, GrabCut segmentation, portion-to-grams), CNN (SimpleCNN from
-  scratch + EfficientNet-B0 transfer, Grad-CAM via manual hooks), NLP (Azerbaijani
-  meal parser/NER, hybrid RAG retriever, advisor, summarizer, 3-provider LLM
-  abstraction with `template` as the zero-dependency default), FastAPI, SQLite,
-  Streamlit demo (4 tabs, all Azerbaijani, custom styling).
-- Tests: 38 passed, 2 skipped (the 2 need trained checkpoints). Run: `pytest tests/ -q`
-- Data: Food101 25-class subset (16,875 train / 1,875 val / 6,250 test),
-  `data/nutrition_db.json` complete for all 25 classes.
-- `reports/nlp_eval.md` exists: parser 20/20, RAG hit-rate 8/10 (honest misses documented).
+```
+pip install -r requirements.txt
+python scripts/prepare_data.py     # Food-101 25-class subset + nutrition DB
+pytest -q                          # expect 40 passed
+streamlit run app/streamlit_app.py # demo at http://localhost:8501
+```
 
-## Check before doing anything: are trained checkpoints present?
+On Windows the owner just double-clicks the desktop **FoodLens** shortcut
+(`START.bat`) — venv check + API + demo + browser all launch automatically.
 
-Look for `models/simple_best.pt` and `models/effnet_best.pt` in the repo.
-- **If present**: training is done, skip to "Remaining work".
-- **If absent**: train first. On a CUDA GPU (~1h total):
-  `python -m src.cnn.train --model simple --epochs 15 --bs 64 --num-workers 4`
-  then `python -m src.cnn.train --model effnet --epochs 10 --bs 32 --num-workers 4`.
-  On CPU, reduce the dataset (edit `limit` in dataloaders) to stay under ~60 min.
-  Do NOT use `--mixed-precision` (see DECISIONS.md #11 — it NaNs BatchNorm on GTX 16xx).
+> The demo runs **fully offline** — `LLM_PROVIDER=template` is the default, no API
+> key needed. This is deliberate (defence-day insurance). Keep it that way.
 
-## Remaining work, in order (details in PROMPTS.md, Prompts 10-12)
+## Current verified state
 
-1. **Evaluate both models**: `python -m src.cnn.evaluate --gradcam 10`
-   -> `reports/metrics.json`, confusion matrices, per-class F1, `model_comparison.png`,
-   10 Grad-CAM overlays **including at least 2 misclassified examples** (the evaluate
-   script handles this automatically).
-2. **`reports/portion_validation.md`** (Prompt 10): run the portion estimator on 10
-   Food101 test images, compare against reference grams (ask the owner for
-   real weighed values, or clearly mark provisional estimates), report MAE and MAPE
-   honestly, analyse failure modes (no plate detected, angled shots, dark plates).
-3. **`notebooks/results.ipynb`**: assemble all charts from `reports/` for the slides.
-4. **`README.md`** (Prompt 11): Azerbaijani section first, then English. Mermaid
-   architecture diagram, results table (SimpleCNN vs EfficientNet), setup/run
-   instructions verified from scratch, limitations, ethics note (not medical advice,
-   portion estimation approximate, Food-101 Western-food bias).
-5. **`PRESENTATION_OUTLINE.md`** (Prompt 11): 12 slides in Azerbaijani with one line
-   of speaker notes each.
-6. **Final review** (Prompt 12): run `pytest`, `ruff check .`, `mypy` and fix issues;
-   verify the Definition of Done checklist in PROJECT_SPEC.md section 10 item by item
-   with PASS/FAIL evidence; do a clean-clone test; list the 3 weakest parts of the
-   project and how to defend them to examiners.
+- **CV (OpenCV):** quality gate (blur/brightness) → HoughCircles plate detection
+  → GrabCut segmentation → area-to-grams portioning.
+- **CNN (PyTorch):** from-scratch `SimpleCNN` baseline vs `EfficientNet-B0`
+  transfer, with Grad-CAM via manual hooks.
+  - Test set (6 250 imgs): **EfficientNet top-1 0.923 / macro-F1 0.922**;
+    SimpleCNN 0.504 / 0.486. (The weak baseline is intentional — it quantifies
+    the transfer-learning gain.)
+- **NLP:** Azerbaijani meal parser/NER + hybrid cosine-plus-lexical RAG. Parser
+  20/20, RAG hit-rate 8/10 (misses documented honestly in `reports/nlp_eval.md`).
+- **Serving:** FastAPI + SQLite; Streamlit demo (4 tabs, all Azerbaijani).
+- **Quality gates all green:** `pytest` 40 passed · `ruff check .` clean ·
+  `mypy src config.py` clean.
 
-## Non-negotiable rules
+## If you want to extend it (optional, pick any)
 
-- Every user-facing string and generated advice: **Azerbaijani**. Code/comments/commits: English.
-- `LLM_PROVIDER=template` stays the default — the demo must run offline with zero API keys.
-- Never replace the CNN/CV/NLP layers with API shortcuts; the grade depends on them
-  being visibly real.
-- Report errors honestly (portion MAE, RAG misses); examiners reward acknowledged limitations.
-- Seeds stay at 42. `git commit` after each step.
-- Windows host uses `run.ps1` (not Makefile); on macOS/Linux just call the same
+1. **Add Azerbaijani dishes** (qutab, dolma, plov…): collect images, add classes
+   to `config.CLASSES` + `data/nutrition_db.json`, re-run
+   `python -m src.cnn.train --model effnet --epochs 10 --bs 32 --num-workers 2`.
+2. **Improve portioning** — the weakest part (MAPE ≈ 131 %): add a reference-object
+   (coin/card) scale so the cm/px estimate stops assuming a fixed 26 cm plate.
+3. **Multi-dish detection**: run an object detector before the classifier so one
+   photo with several foods works (currently one-dish-per-plate).
+
+## Non-negotiable rules (if you touch the code)
+
+- Every user-facing string and generated advice stays **Azerbaijani**. Code,
+  comments and commits stay in English.
+- `LLM_PROVIDER=template` stays the default — never make the demo require a network.
+- Never replace the CNN/CV/NLP layers with API shortcuts; the grade depends on
+  them being real.
+- Do NOT train with `--mixed-precision` on a GTX 16xx GPU — it NaNs BatchNorm
+  (see `DECISIONS.md` #11) and gives no speedup (no tensor cores).
+- Report errors honestly (portion MAE, RAG misses); examiners reward acknowledged
+  limitations. Seeds stay at 42. `git commit` after each meaningful step.
+- Windows host uses `run.ps1` (not a Makefile); on macOS/Linux call the same
   `python -m ...` commands directly.
-- If something is ambiguous: make the reasonable choice, log it in `DECISIONS.md`, keep moving.
