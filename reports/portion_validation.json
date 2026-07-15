@@ -1,0 +1,141 @@
+{
+  "n": 12,
+  "mae_g": 158.7,
+  "mape_pct": 131.2,
+  "median_ape_pct": 78.1,
+  "no_plate_count": 1,
+  "rows": [
+    {
+      "class": "pizza",
+      "reference_g": 107.0,
+      "estimated_g": 365.8,
+      "bucket": "L",
+      "coverage": 0.626,
+      "plate_detected": true,
+      "confidence": "high",
+      "abs_error_g": 258.8,
+      "ape_pct": 241.9
+    },
+    {
+      "class": "donuts",
+      "reference_g": 60.0,
+      "estimated_g": 250.5,
+      "bucket": "L",
+      "coverage": 0.674,
+      "plate_detected": true,
+      "confidence": "high",
+      "abs_error_g": 190.5,
+      "ape_pct": 317.5
+    },
+    {
+      "class": "club_sandwich",
+      "reference_g": 230.0,
+      "estimated_g": 246.3,
+      "bucket": "L",
+      "coverage": 0.515,
+      "plate_detected": true,
+      "confidence": "high",
+      "abs_error_g": 16.3,
+      "ape_pct": 7.1
+    },
+    {
+      "class": "omelette",
+      "reference_g": 122.0,
+      "estimated_g": 174.4,
+      "bucket": "M",
+      "coverage": 0.365,
+      "plate_detected": true,
+      "confidence": "high",
+      "abs_error_g": 52.4,
+      "ape_pct": 43.0
+    },
+    {
+      "class": "fried_rice",
+      "reference_g": 198.0,
+      "estimated_g": 118.8,
+      "bucket": "S",
+      "coverage": 0.232,
+      "plate_detected": false,
+      "confidence": "low",
+      "abs_error_g": 79.2,
+      "ape_pct": 40.0
+    },
+    {
+      "class": "sushi",
+      "reference_g": 200.0,
+      "estimated_g": 92.1,
+      "bucket": "S",
+      "coverage": 0.217,
+      "plate_detected": true,
+      "confidence": "high",
+      "abs_error_g": 107.9,
+      "ape_pct": 53.9
+    },
+    {
+      "class": "lasagna",
+      "reference_g": 250.0,
+      "estimated_g": 434.5,
+      "bucket": "L",
+      "coverage": 0.744,
+      "plate_detected": true,
+      "confidence": "high",
+      "abs_error_g": 184.5,
+      "ape_pct": 73.8
+    },
+    {
+      "class": "waffles",
+      "reference_g": 75.0,
+      "estimated_g": 309.1,
+      "bucket": "L",
+      "coverage": 0.728,
+      "plate_detected": true,
+      "confidence": "high",
+      "abs_error_g": 234.1,
+      "ape_pct": 312.1
+    },
+    {
+      "class": "hamburger",
+      "reference_g": 226.0,
+      "estimated_g": 554.7,
+      "bucket": "L",
+      "coverage": 0.696,
+      "plate_detected": true,
+      "confidence": "high",
+      "abs_error_g": 328.7,
+      "ape_pct": 145.4
+    },
+    {
+      "class": "spaghetti_bolognese",
+      "reference_g": 300.0,
+      "estimated_g": 220.5,
+      "bucket": "M",
+      "coverage": 0.461,
+      "plate_detected": true,
+      "confidence": "high",
+      "abs_error_g": 79.5,
+      "ape_pct": 26.5
+    },
+    {
+      "class": "cheesecake",
+      "reference_g": 125.0,
+      "estimated_g": 413.0,
+      "bucket": "L",
+      "coverage": 0.778,
+      "plate_detected": true,
+      "confidence": "high",
+      "abs_error_g": 288.0,
+      "ape_pct": 230.4
+    },
+    {
+      "class": "falafel",
+      "reference_g": 102.0,
+      "estimated_g": 186.1,
+      "bucket": "M",
+      "coverage": 0.438,
+      "plate_detected": true,
+      "confidence": "high",
+      "abs_error_g": 84.1,
+      "ape_pct": 82.5
+    }
+  ]
+}
